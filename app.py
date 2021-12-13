@@ -3,9 +3,8 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 @app.route("/")
-@app.route("/home")
-def home():
-    return render_template("index.html")
+def putYoutubeLink():
+    return render_template("put_youtube_link.html")
 
 @app.route("/user/<user_name>/<int:user_id>")
 def user(user_name, user_id):

@@ -1,3 +1,4 @@
+import random as rd
 import pandas as pd
 from googleapiclient.discovery import build
 
@@ -13,13 +14,15 @@ def getYoutubeComments(inputVideoId : str) -> list:
 
     while response:
         for item in response['items']:
+            randomLabel = str(int(rd.randrange(1, 3)))
+
             comment = item['snippet']['topLevelComment']['snippet']
-            comments.append([comment['textDisplay'], comment['authorDisplayName'], comment['publishedAt'], comment['likeCount']])
+            comments.append([comment['textDisplay'], comment['authorDisplayName'], comment['publishedAt'], comment['likeCount'], randomLabel])
     
             if item['snippet']['totalReplyCount'] > 0:
                 for reply_item in item['replies']['comments']:
                     reply = reply_item['snippet']
-                    comments.append([reply['textDisplay'], reply['authorDisplayName'], reply['publishedAt'], reply['likeCount']])
+                    comments.append([reply['textDisplay'], reply['authorDisplayName'], reply['publishedAt'], reply['likeCount'], randomLabel])
     
         if 'nextPageToken' in response:
             response = api_obj.commentThreads().list(part='snippet,replies', videoId=inputVideoId, pageToken=response['nextPageToken'], maxResults=100).execute() #videoID is video's Only code
@@ -27,11 +30,10 @@ def getYoutubeComments(inputVideoId : str) -> list:
             break
 
     # have to fix #
-    print(comments)
-    print(type(comments))
-    df = pd.DataFrame(comments)
+    #df = pd.DataFrame(comments)
+    #df.columns = ['comment', 'author', 'date', 'numLikes', 'label']
     #print(type(df))
     #print(df)
     #df.to_excel('results.xlsx', header=['comment', 'author', 'date', 'num_likes'], index=None)
-
+    
     return comments
