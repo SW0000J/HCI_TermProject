@@ -34,6 +34,32 @@ def getTrainDf(crawledComments : list) -> pd.DataFrame:
         pretreatmentComment.append(commentData)
 
     train_df = pd.DataFrame(pretreatmentComment)
+    # train_df.columns = ['comment', 'author', 'date', 'numLikes', 'label']
+    train_df.columns = ['author', 'comment', 'label']
+
+    train_df = train_df[train_df['comment'].notnull()]
+    #print(train_df.info())
+    #print(train_df['label'].value_counts())
+
+    train_df['comment'] = train_df['comment'].apply(lambda x : re.sub(r'[^ ㄱ-ㅣ가-힣]+', " ", x))
+    #print(train_df.head())
+    #print(train_df.info())
+
+    return train_df
+
+def getProcessedDf(crawledComments : list) -> pd.DataFrame:
+    pretreatmentComment = []
+
+    for commentData in crawledComments:
+        commentData[0] = str(commentData[0])
+        commentData[0] = commentData[0].strip()
+
+        if not commentData[0]:
+            break
+
+        pretreatmentComment.append(commentData)
+
+    train_df = pd.DataFrame(pretreatmentComment)
     train_df.columns = ['comment', 'author', 'date', 'numLikes', 'label']
 
     train_df = train_df[train_df['comment'].notnull()]
