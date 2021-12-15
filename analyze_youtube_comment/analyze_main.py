@@ -28,5 +28,5 @@ def Train():
 
 if __name__ == "__main__":
     Train()
-    # have to fix save model
+    # have to sort & countVector
     # have to fix web page
