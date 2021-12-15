@@ -24,7 +24,7 @@ def Train():
     crawl_df = proc.getProcessedDf(crawledComments)
     preprocessedData = crawl_df.values.tolist()
 
-    tr.train(train_df, okt, preprocessedData, badwords, True)
+    tr.train(train_df, okt, preprocessedData, badwords, False)
 
 if __name__ == "__main__":
     Train()
