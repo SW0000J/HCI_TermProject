@@ -11,6 +11,7 @@ import pickle
 from konlpy.tag import Okt
 import re
 import warnings
+import operator
 
 class MTfidfVectorizer(TfidfVectorizer):
     def setIdfs(self, idfs):
@@ -63,13 +64,17 @@ def train(train_df : pd.DataFrame, okt : Okt, crawledComments : list, badwords :
     print(grid_cv)
 
 #def predict(crawledComments : list, badwords : list, tfv : TfidfVectorizer, clf : LogisticRegression, grid_cv : GridSearchCV) -> list:
-    bad = 0
-    good = 0
-    exc = 0
-    bad_data = []
-    good_data = []
+    bad_count = 0
+    good_count = 0
+    exc_count = 0
+    bad_dataL = []
+    good_dataL = []
+    exc_dataL = []
 
     for comment_data in crawledComments:
+        commentDataKey = ['Comment', 'Author', 'Date', 'CommentLikes', 'Label']
+        commentInfo = dict(zip(commentDataKey, comment_data))
+
         try:
             comment = str(comment_data[0])
         
@@ -79,21 +84,35 @@ def train(train_df : pd.DataFrame, okt : Okt, crawledComments : list, badwords :
             st_tfidf = tfv.transform(comment)
 
             st_predict = grid_cv.best_estimator_.predict(st_tfidf)
-            print(st_predict)
+            #print(st_predict)
             if(st_predict == 0 or badwords in comment):
-                bad_data.append(comment_data)
-                bad += 1
+                bad_dataL.append(commentInfo)
+                bad_count += 1
             else:
-                good_data.append(comment_data)
-                good += 1
+                good_dataL.append(commentInfo)
+                good_count += 1
         except:
-            exc += 1
+            exc_dataL.append(commentInfo)
+            exc_count += 1
             pass
     
-    print("bad count :", bad)
-    print("good count :", good)
-    print("exc count :", exc)
-    print("\nbad data :\n", bad_data)
-    print("\ngood data :\n", good_data)
-    
-    return [bad_data, good_data, bad, good, exc]
+    bad_dataL.sort(key=operator.itemgetter('CommentLikes', 'Comment'), reverse=True)
+    good_dataL.sort(key=operator.itemgetter('CommentLikes', 'Comment'), reverse=True)
+    exc_dataL.sort(key=operator.itemgetter('CommentLikes', 'Comment'), reverse=True)
+
+    bad_key = [ str(i) for i in range(1, bad_count+1)]
+    good_key = [ str(i) for i in range(1, good_count+1)]
+    exc_key = [ str(i) for i in range(1, exc_count+1)]
+
+    bad_data = dict(zip(bad_key, bad_dataL))
+    good_data = dict(zip(good_key, good_dataL))
+    exc_data = dict(zip(exc_key, exc_dataL))
+
+    #print("bad count :", bad_count)
+    #print("good count :", good_count)
+    #print("exc count :", exc_count)
+    #print("\nbad data :\n", bad_data)
+    #print("\ngood data :\n", good_data)
+    #print("\nexc data :\n", exc_data)
+
+    return [str(bad_count), str(good_count), str(exc_count), bad_data, good_data, exc_data]

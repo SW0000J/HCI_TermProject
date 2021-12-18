@@ -11,6 +11,14 @@ def getYoutubeComments(inputVideoId : str) -> list:
     comments = list()
     api_obj = build('youtube', 'v3', developerKey = "AIzaSyDXkaMaPYgoK6UsnbbUb5XRMRHjdVJWt1E")
     response = api_obj.commentThreads().list(part='snippet,replies', videoId=inputVideoId, maxResults=100).execute() #videoID is video's Only code
+    video_response = api_obj.videos().list(id=inputVideoId, part='snippet,contentDetails,statistics').execute()
+
+
+    videoInfo = []
+    videoInfo.append(str(video_response['items'][0]['snippet']['title']))
+    videoInfo.append(str(video_response['items'][0]['statistics']['viewCount']))
+    videoInfo.append(str(video_response['items'][0]['statistics']['likeCount']))
+    videoInfo.append(str(video_response['items'][0]['statistics']['commentCount']))
 
     while response:
         for item in response['items']:
@@ -36,4 +44,4 @@ def getYoutubeComments(inputVideoId : str) -> list:
     #print(df)
     #df.to_excel('results.xlsx', header=['comment', 'author', 'date', 'num_likes'], index=None)
     
-    return comments
+    return comments, videoInfo
