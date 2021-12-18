@@ -9,7 +9,7 @@ from googleapiclient.discovery import build
 
 def getYoutubeComments(inputVideoId : str) -> list:
     comments = list()
-    api_obj = build('youtube', 'v3', developerKey = #have to get developerKey)
+    api_obj = build('youtube', 'v3', developerKey = "AIzaSyDXkaMaPYgoK6UsnbbUb5XRMRHjdVJWt1E")
     response = api_obj.commentThreads().list(part='snippet,replies', videoId=inputVideoId, maxResults=100).execute() #videoID is video's Only code
     video_response = api_obj.videos().list(id=inputVideoId, part='snippet,contentDetails,statistics').execute()
 
